@@ -733,7 +733,7 @@ class FluidScale {
                   el.style.transition = 'none';
                 }
                 
-                //void el.offsetHeight;
+                void el.offsetHeight;
               }
             if (doDelayedtransition)
               requestAnimationFrame (() => {
@@ -842,7 +842,7 @@ class FluidScale {
       if (performance.now() - this.lastWidthShift <= 500 && topEl && !isUserScrolling)
      {
       
-      //void document.body.offsetHeight;
+      void document.body.offsetHeight;
       let rect = topEl.getBoundingClientRect ();
 
 
