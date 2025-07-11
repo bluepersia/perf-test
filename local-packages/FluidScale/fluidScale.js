@@ -160,7 +160,10 @@ function userScroll ()
 {
   const [el, rect] = getElementClosestToTop (elsInViewport);
   topEl = el;
-  lastTop = rect.top;
+  if(typeof rect === 'number')
+    lastTop = rect;
+  else 
+    lastTop = rect.top;
 }
 try {
 
@@ -733,7 +736,6 @@ class FluidScale {
                   el.style.transition = 'none';
                 }
                 
-                //void el.offsetHeight;
               }
             if (doDelayedtransition)
               requestAnimationFrame (() => {
@@ -777,7 +779,6 @@ class FluidScale {
    
   if(scrollFix)
   {
-    
     this.applyScrollFix ();
   /*
     if (justShifted) {
@@ -842,16 +843,22 @@ class FluidScale {
       if (performance.now() - this.lastWidthShift <= 500 && topEl && !isUserScrolling)
      {
       
-      //void document.body.offsetHeight;
       let rect = topEl.getBoundingClientRect ();
 
-
+    let zeroEl;
     if(rect.width === 0 && rect.height === 0)
     {
+      zeroEl = topEl;
       const [newEl, newRect] = getElementClosestToLastTop (elsInViewport);
-      topEl = newEl;
-      rect = newRect;
+      if (newEl)
+      {
+        topEl = newEl;
+        rect = newRect;
+      }
     }
+
+    if(topEl !== zeroEl)
+    {
     rect = topEl.getBoundingClientRect ();
     const newTop = rect.top;
    
@@ -866,6 +873,7 @@ class FluidScale {
         behavior: 'instant'
       })
 
+    }
       //targetScroll += distance;
      // currentScroll = targetScroll;
       //justShifted = true;
@@ -1268,6 +1276,9 @@ class FluidPropertyCombo extends FluidProperty {
 
 
 function getElementClosestToLastTop(elements) {
+  if(elements.size <= 0)
+    return [null, lastTop];
+
   let closestElement = null;
   let closestDistance = Infinity;
   let closestRect;
@@ -1286,6 +1297,9 @@ function getElementClosestToLastTop(elements) {
   return [closestElement, closestRect];
 }
 function getElementClosestToTop(elements) {
+  if(elements.size < 0)
+    return [topEl, lastTop];
+
   let closestElement = topEl;
   let closestDistance = Infinity;
   let closestRect;
@@ -1373,11 +1387,11 @@ function isInViewport(el, cache, margin = 0) {
 
 
 
-function getCharUnit(el, unit = 'ch') {
+function getCharUnit(el, unit = 'ch', style) {
   const test = document.createElement('span');
   test.style.visibility = 'hidden';
   test.style.position = 'absolute';
-  test.style.font = getComputedStyle(el).font;
+  test.style.font = style.font;
   test.textContent = unit === 'ch' ? '0' : 'x';
   document.body.appendChild(test);
   const rect = test.getBoundingClientRect();
@@ -1528,7 +1542,7 @@ function convertToPx (val, unit, property, el, computedStyleCache, boundClientRe
 
     case 'ch':
     case 'ex':
-      return val * getCharUnit(el, unit);
+      return val * getCharUnit(el, unit, getCachedComputedStyle(el));
 
     case "lh": 
       const style = getCachedComputedStyle(el, computedStyleCache);
