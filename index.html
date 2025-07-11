@@ -45,7 +45,7 @@
     </style>
   </head>
   <body>
-    <h1>This is a media query layout</h1>
+    <h1>This is a fluidscale layout</h1>
     <div class="box">This box uses fixed breakpoints.</div>
     <div class="box">This box uses fixed breakpoints.</div>
     <div class="box">This box uses fixed breakpoints.</div>
@@ -1078,6 +1078,11 @@
         console.log('Highest:', highest);
         console.log('Lowest:', lowest);
       });
+
+      document.addEventListener(
+        'keydown',
+        () => (window.location.href = 'clamp.html')
+      );
     </script>
   </body>
 </html>

@@ -1069,6 +1069,11 @@
           [...allTimes].reduce((prev, curr) => prev + curr, 0) / allTimes.size
         )
       );
+
+      document.addEventListener(
+        'keydown',
+        () => (window.location.href = 'index.html')
+      );
     </script>
   </body>
 </html>
