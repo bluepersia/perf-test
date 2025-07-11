@@ -1050,26 +1050,35 @@
     <script type="module">
       import fluidScale from './local-packages/FluidScale/fluidScale.js';
 
-      fluidScale();
-
-      let lastTime = performance.now();
+      const fs = await fluidScale({ autoObserve: false });
+      fs.addElements([document.body, ...document.body.querySelectorAll('*')]);
       const allTimes = new Set();
       let highest = 0;
       let lowest = Infinity;
-
-      requestAnimationFrame(fpsAlert);
-      function fpsAlert() {
-        const now = performance.now();
-        const took = now - lastTime;
-        lastTime = performance.now();
-        allTimes.add(took);
-        if (took > highest) highest = took;
-        if (took < lowest) lowest = took;
+      function start() {
+        let lastTime = performance.now();
 
         requestAnimationFrame(fpsAlert);
+        function fpsAlert() {
+          const now = performance.now();
+          const took = now - lastTime;
+          lastTime = performance.now();
+          allTimes.add(took);
+          if (took > highest) highest = took;
+          if (took < lowest) lowest = took;
+
+          requestAnimationFrame(fpsAlert);
+        }
       }
 
+      let started;
       document.addEventListener('click', () => {
+        if (!started) {
+          started = true;
+          start();
+          console.log('Started');
+          return;
+        }
         console.log(
           'Average:',
           [...allTimes].reduce((prev, curr) => prev + curr, 0) / allTimes.size
@@ -1083,6 +1092,19 @@
         'keydown',
         () => (window.location.href = 'clamp.html')
       );
+
+      async function waitUntilTrue(getBooleanFn, interval = 100) {
+        return new Promise((resolve) => {
+          const check = () => {
+            if (getBooleanFn()) {
+              resolve();
+            } else {
+              setTimeout(check, interval);
+            }
+          };
+          check();
+        });
+      }
     </script>
   </body>
 </html>
